@@ -8,7 +8,7 @@
 
 // Execute `rustlings hint errors6` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
+
 
 use std::num::ParseIntError;
 
@@ -24,7 +24,9 @@ impl ParsePosNonzeroError {
         ParsePosNonzeroError::Creation(err)
     }
     // TODO: add another error conversion function here.
-    // fn from_parseint...
+    fn from_parseint(err: ParseIntError) -> ParsePosNonzeroError {
+        ParsePosNonzeroError::ParseInt(err)
+    }
 }
 
 fn parse_pos_nonzero(s: &str)
@@ -32,7 +34,12 @@ fn parse_pos_nonzero(s: &str)
 {
     // TODO: change this to return an appropriate error instead of panicking
     // when `parse()` returns an error.
-    let x: i64 = s.parse().unwrap();
+    // 具体来说，需要将 match 表达式中 Ok 和 Err 分支中的错误都转换为 ParsePosNonzeroError 类型。
+    // 对于 Ok 分支，需要使用 PositiveNonzeroInteger::new() 方法将值进行处理；对于 Err 分支，则直接将原始错误转换为自定义错误类型即可。
+    let x: i64 = match s.parse() {
+        Ok(value) => value,
+        Err(err) => return Err(ParsePosNonzeroError::from_parseint(err)),
+    };
     PositiveNonzeroInteger::new(x)
         .map_err(ParsePosNonzeroError::from_creation)
 }
