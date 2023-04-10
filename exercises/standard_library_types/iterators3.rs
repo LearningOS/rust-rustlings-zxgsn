@@ -19,10 +19,28 @@ pub struct NotDivisibleError {
     divisor: i32,
 }
 
+/*
+let results = [Ok(1), Err("nope"), Ok(3), Err("bad")];
+
+let result: Result<Vec<_>, &str> = results.iter().cloned().collect();
+
+// gives us the first error
+assert_eq!(Err("nope"), result);
+
+let results = [Ok(1), Ok(3)];
+
+let result: Result<Vec<_>, &str> = results.iter().cloned().collect();
+
+// gives us the list of answers
+assert_eq!(Ok(vec![1, 3]), result);
+ */
+
 // Calculate `a` divided by `b` if `a` is evenly divisible by `b`.
 // Otherwise, return a suitable error.
 pub fn divide(a: i32, b: i32) -> Result<i32, DivisionError> {
-    if a % b == 0 {
+    if b == 0 {
+        Err(DivisionError::DivideByZero)
+    } else if a % b == 0 {
         Ok(a/b)
     } else {
         Err(DivisionError::NotDivisible(NotDivisibleError{dividend: a, divisor: b}))
@@ -31,16 +49,18 @@ pub fn divide(a: i32, b: i32) -> Result<i32, DivisionError> {
 
 // Complete the function and return a value of the correct type so the test passes.
 // Desired output: Ok([1, 11, 1426, 3])
-fn result_with_list() -> () {
+fn result_with_list() -> Result<Vec<i32>, DivisionError> {
     let numbers = vec![27, 297, 38502, 81];
-    let division_results = numbers.into_iter().map(|n| divide(n, 27));
+    let division_results = numbers.into_iter().map(|n| divide(n, 27)).collect::<Result<Vec<i32>, DivisionError>>();
+    division_results
 }
 
 // Complete the function and return a value of the correct type so the test passes.
 // Desired output: [Ok(1), Ok(11), Ok(1426), Ok(3)]
-fn list_of_results() -> () {
+fn list_of_results() -> Vec<Result<i32, DivisionError>> {
     let numbers = vec![27, 297, 38502, 81];
-    let division_results = numbers.into_iter().map(|n| divide(n, 27));
+    let division_results = numbers.into_iter().map(|n| divide(n, 27)).collect::<Vec<Result<i32, DivisionError>>>();
+    division_results
 }
 
 #[cfg(test)]

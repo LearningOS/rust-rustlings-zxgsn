@@ -7,6 +7,8 @@
 
 use std::convert::{TryFrom, TryInto};
 
+
+
 #[derive(Debug, PartialEq)]
 struct Color {
     red: u8,
@@ -23,7 +25,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
 
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
@@ -38,6 +39,12 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (r, g, b) = tuple;
+        if 0 < r && r < 255 && 0 < g && g < 255 && 0 < b && b < 255 {
+            Ok(Color{red: r as u8, green: g as u8, blue: b as u8})
+        } else {
+            Err(IntoColorError::IntConversion)
+        }
     }
 }
 
@@ -45,6 +52,14 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        for int in arr {
+            if 0 < int && int < 255 {
+                continue;
+            } else {
+                return Err(IntoColorError::IntConversion);
+            }
+        }
+        Ok(Color{red: arr[0] as u8, green: arr[1] as u8, blue: arr[2] as u8})
     }
 }
 
@@ -52,6 +67,22 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        let mut itr = slice.iter();
+        let mut arr:Vec<i16> = vec![];
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+        for i in 0..3 {
+        if let Some(signal_color) = itr.next() {
+            if 0 < *signal_color && *signal_color < 255 {
+                arr.push(*signal_color);
+            } else {
+                return Err(IntoColorError::IntConversion);
+            }
+
+        }
+    }
+        Ok(Color{red: arr[0] as u8, green: arr[1] as u8, blue: arr[2] as u8})
     }
 }
 
